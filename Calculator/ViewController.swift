@@ -20,8 +20,21 @@ class ViewController: UIViewController {
         
         isFinishedTypingNumber = true
         
-        guard let number = Double(displayLabel.text!) else {
+        guard let number = Double(displayLabel.text!)
+        else {
             fatalError("Cannot convert display label into a Double")
+        }
+        
+        if let calcMethod = sender.currentTitle {
+            if calcMethod == "AC" {
+                displayLabel.text = "0"
+            }
+            if calcMethod == "+/-" {
+                displayLabel.text = String(number * -1)
+            }
+            if calcMethod == "%" {
+                displayLabel.text = String(number / 100)
+            }
         }
     
     }
@@ -34,6 +47,18 @@ class ViewController: UIViewController {
                 displayLabel.text = numValue
                 isFinishedTypingNumber = false
             } else {
+                if  numValue == "." {
+                    //TODO: Fix dot beign added twice
+                    guard let currentDisplayValue = Double(displayLabel.text!) else {
+                        fatalError("Cannot convert display label into a double !")
+                    }
+                    
+                    let isInt = floor(currentDisplayValue) == currentDisplayValue
+                    
+                    if !isInt {
+                        return
+                    }
+                }
                 displayLabel.text = displayLabel.text! + numValue
             }
         }
