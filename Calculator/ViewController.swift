@@ -10,7 +10,22 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var isFinishedTypingNumber:Bool = true
+    private var isFinishedTypingNumber:Bool = true
+    private var calculatorLogic = CalculatorLogic()
+    
+    private var displayValue: Double {
+        get{
+            guard let number = Double(displayLabel.text!)
+            else {
+                fatalError("Cannot convert display label into a Double")
+            }
+            return number
+        }
+        set{
+            displayLabel.text = String(newValue)
+        }
+    }
+    
     
     @IBOutlet weak var displayLabel: UILabel!
     
@@ -20,23 +35,12 @@ class ViewController: UIViewController {
         
         isFinishedTypingNumber = true
         
-        guard let number = Double(displayLabel.text!)
-        else {
-            fatalError("Cannot convert display label into a Double")
-        }
-        
         if let calcMethod = sender.currentTitle {
-            if calcMethod == "AC" {
-                displayLabel.text = "0"
+            guard let calculatedValue = calculatorLogic.calculate(number: displayValue, calcMethod: calcMethod) else {
+                fatalError("Calculation couldt no be completed")
             }
-            if calcMethod == "+/-" {
-                displayLabel.text = String(number * -1)
-            }
-            if calcMethod == "%" {
-                displayLabel.text = String(number / 100)
-            }
+            displayValue = calculatedValue
         }
-    
     }
 
     
@@ -49,11 +53,7 @@ class ViewController: UIViewController {
             } else {
                 if  numValue == "." {
                     //TODO: Fix dot beign added twice
-                    guard let currentDisplayValue = Double(displayLabel.text!) else {
-                        fatalError("Cannot convert display label into a double !")
-                    }
-                    
-                    let isInt = floor(currentDisplayValue) == currentDisplayValue
+                    let isInt = floor(displayValue) == displayValue
                     
                     if !isInt {
                         return
